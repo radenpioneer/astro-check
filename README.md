@@ -3,10 +3,8 @@
 A composite action that checks your Astro site before deployment (e.g as your CI workflow). Requires a check command defined in your `package.json`.
 
 ```json
-// in package.json
 "scripts": {
   "check": "astro check"
-  // rest of your npm scripts
 }
 ```
 
@@ -51,8 +49,8 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v3
-      - name: Install, build, and upload your site output
-        uses: radenpioneer/astro-check@main
+      - name: Run checks
+        uses: radenpioneer/astro-check@v0
         with:
           check-command: "check" # Needs to be defined in your `package.json`.
           # path: . # The root location of your Astro project inside the repository. (optional)
