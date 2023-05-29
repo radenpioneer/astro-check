@@ -1,30 +1,9 @@
-name: "Astro Deploy to FTP"
-description: "A composite action that prepares your Astro site to be deployed to any FTP server."
+name: "Astro Check"
+description: "A composite action that checks your Astro site before deployment. Requires a check command defined in your `package.json`."
 branding:
   icon: "box"
   color: "orange"
 inputs:
-  server:
-    description: "FTP server hostname"
-    required: true
-  username:
-    description: "FTP username"
-    required: true
-  password:
-    description: "FTP password"
-    required: true
-  directory:
-    description: "Path to upload to (on the server). Must end with trailing slash /"
-    required: false
-    default: "public_html/"
-  protocol:
-    description: "Protocol to use, supports `ftp`, `ftps` and `ftps-legacy`. Defaults to `ftp`"
-    required: false
-    default: "ftp"
-  port:
-    description: "Remote server port"
-    required: false
-    default: "21"
   path:
     description: "Path of the directory containing your site"
     required: false
@@ -41,11 +20,11 @@ inputs:
     description: "If the dependency file is located inside the folder specified by path" 
     type: boolean
     required: false
-    default: true 
-  dry-run:
-    description:
-    required: false
-    default: false
+    default: true
+  check-command:
+    description: "Your supplied check command, defined in `package.json` Defaults to `check`."
+    required: true
+    default: "check"
 
 runs:
   using: composite
@@ -103,16 +82,5 @@ runs:
       shell: "bash"
       run: |
         cd ${{ inputs.path }}
-        $PACKAGE_MANAGER run build
+        $PACKAGE_MANAGER run ${{ inputs.check-command }}
 
-    - name: Upload to FTP Server
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ inputs.server }}
-        port: ${{ inputs.port }}
-        protocol: ${{ inputs.protocol }}
-        username: ${{ inputs.username }}
-        password: ${{ inputs.password }}
-        server-dir: ${{ inputs.directory }}
-        dry-run: ${{ inputs.dry-run }}
-        local-dir: ./dist/

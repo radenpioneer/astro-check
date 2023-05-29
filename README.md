@@ -1,27 +1,26 @@
-# Deploy Astro using FTP
+# Astro Check
 
-This action for [Astro](https://github.com/withastro/astro) builds your Astro project for deployment using traditional FTP upload.
+A composite action that checks your Astro site before deployment (e.g as your CI workflow). Requires a check command defined in your `package.json`.
+
+```json
+// in package.json
+"scripts": {
+  "check": "astro check"
+  // rest of your npm scripts
+}
+```
 
 ## Usage
-
-> **Note**: Want to get started even faster? Create a repository from our minimal [template](https://github.com/radenpioneer/astro-ftp-template)!
 
 ### Inputs
 
 #### Required
 
-> **Warning**: Never put your sensitive information in version control! Put these information in `secrets` variable.
-
-- `server` - The address of your FTP server, e.g `ftp.myftpserver.com`.
-- `username` - The username of your FTP server.
-- `password` - The password of your FTP server.
+- `check-command` - Your supplied check command, defined in `package.json` Defaults to `check`.
 
 
 #### Optional
 
-- `directory` - The path to upload to, on your FTP server, relative to your FTP root. Must end with trailing slash, e.g `www/`. Defaults to `public_html/`.
-- `protocol` - The protocol to use on your FTP server. Accepts `ftp`, `ftps`, and `ftps-legacy`. Defaults to `ftp`.
-- `port` - The port of your FTP server. Defaults to `21`.
 - `path` - The root location of your Astro project inside the repository.
 - `node-version` - The specific version of Node that should be used to build your site. Defaults to `16`.
 - `package-manager` - The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile.
@@ -34,15 +33,13 @@ This action for [Astro](https://github.com/withastro/astro) builds your Astro pr
 Create a file at `.github/workflows/deploy.yml` with the following content.
 
 ```yml
-name: Deploy to GitHub Pages
+name: Check my Astro site
 
 on:
-  # Trigger the workflow every time you push to the `main` branch
+  # Trigger the workflow every time you created a pull request against the `main` branch
   # Using a different branch name? Replace `main` with your branch’s name
-  push:
+  pull_request:
     branches: [ main ]
-  # Allows you to run this workflow manually from the Actions tab on GitHub.
-  workflow_dispatch:
   
 # Allow this job to clone the repo and create a deployment
 permissions:
@@ -55,14 +52,9 @@ jobs:
       - name: Checkout your repository using git
         uses: actions/checkout@v3
       - name: Install, build, and upload your site output
-        uses: radenpioneer/astro-ftp@main
+        uses: radenpioneer/astro-check@main
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          # directory: public_html/ # The path to upload to, on your FTP server, relative to your FTP root. Must end with trailing slash. (optional)
-          # protocol: ftp # The protocol to use on your FTP server. (optional)
-          # port: "21" # The port of your FTP server. (optional)
+          check-command: "check" # Needs to be defined in your `package.json`.
           # path: . # The root location of your Astro project inside the repository. (optional)
           # node-version: 16 # The specific version of Node that should be used to build your site. Defaults to 16. (optional)
           # package-manager: yarn # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
@@ -70,11 +62,6 @@ jobs:
 
 ```
 
-### SFTP Support
-
-SFTP is unsupported at current time.
-
 ## Attribution
 
-- This Github Action is a fork of Astro's official [`withastro/actions`](https://github.com/withastro/action), and modified for FTP deployment.
-- This action uses [`SamKirkland/FTP-Deploy-Action`](https://github.com/SamKirkland/FTP-Deploy-Action) under the hood. 
+- This Github Action is imported from Astro's official [`withastro/actions`](https://github.com/withastro/action), and modified for checking.
