@@ -55,7 +55,7 @@ runs:
       if: ${{ env.PACKAGE_MANAGER == 'pnpm' }}
       uses: pnpm/action-setup@v2.2.2
       with:
-        version: 7.x.x
+        version: latest
 
     - name: Setup Node
       uses: actions/setup-node@v3
